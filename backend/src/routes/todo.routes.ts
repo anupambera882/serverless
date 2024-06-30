@@ -38,11 +38,25 @@ todoRouter.post('/create', auth, validate(createBlogInput), async (c) => {
 })
 
 todoRouter.get('/all', auth, async (c) => {
+	const userId = c.get('userId') as string;
 	const prisma = new PrismaClient({
 		datasourceUrl: c.env?.DATABASE_URL,
 	}).$extends(withAccelerate());
 
-	const allTodo = await prisma.todo.findMany({});
+	const allTodo = await prisma.todo.findMany({
+		where: {
+			createdBy: +userId
+		},
+		select: {
+			id: true,
+			title: true,
+			content: true,
+			isDone: true,
+			createdAt: true,
+			updateAt: true,
+			createdBy: true,
+		}
+	});
 
 	return c.json({
 		statusCode: HttpStatusCode.Ok,
@@ -52,6 +66,7 @@ todoRouter.get('/all', auth, async (c) => {
 });
 
 todoRouter.get('/:id', auth, async (c) => {
+	const userId = c.get('userId') as string;
 	const id = c.req.param('id');
 	const prisma = new PrismaClient({
 		datasourceUrl: c.env?.DATABASE_URL,
@@ -59,6 +74,7 @@ todoRouter.get('/:id', auth, async (c) => {
 
 	const todo = await prisma.todo.findUnique({
 		where: {
+			createdBy: +userId,
 			id: +id
 		}
 	});
