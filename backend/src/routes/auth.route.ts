@@ -19,7 +19,7 @@ const userRouter = new Hono<{
   }
 }>();
 
-userRouter.post('/signup', validate(signUpInput), async ({ req, env, json, status }) => {
+userRouter.post('/signup', validate(signUpInput), async ({ req, env, json }) => {
   const prisma = new PrismaClient({
     datasourceUrl: env?.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -86,7 +86,7 @@ userRouter.post('/signin', validate(signInInput), async (c) => {
     c.env.JWT_SECRET,
   );
   const accessToken = await sign(
-    { userId: user.id, email: user.email },
+    { userId: user.id, email: user.email, exp: Math.floor(Date.now() / 1000) + 1 * 60 * 60 * 24 },
     c.env.JWT_SECRET,
   );
 
@@ -170,7 +170,9 @@ userRouter.get('/access-token', async (c) => {
     }, HttpStatusCode.Unauthorized);
   }
 
-  const accessToken = await sign({ userId: findUser.id, email: findUser.email }, c.env.JWT_SECRET);
+  const accessToken = await sign(
+    { userId: findUser.id, email: findUser.email, exp: Math.floor(Date.now() / 1000) + 1 * 60 * 60 * 24 },
+    c.env.JWT_SECRET);
 
   return c.json({
     statusCode: HttpStatusCode.Ok,

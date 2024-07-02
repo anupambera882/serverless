@@ -2,7 +2,7 @@ import AppBar from "../components/AppBar"
 import { BACKEND_URL } from "../config";
 import { useNavigate } from "react-router-dom";
 import { ChangeEvent, useState } from "react";
-import { HTTP } from "../HTTP";
+import PRIVATE_HTTP from "../HTTP";
 
 const CreateTodo = () => {
   const [title, setTitle] = useState("");
@@ -21,15 +21,11 @@ const CreateTodo = () => {
           setDescription(e.target.value)
         }} />
         <button onClick={async () => {
-          const response = await HTTP.post(`${BACKEND_URL}/api/v1/todo/create`, JSON.stringify({
+          await PRIVATE_HTTP.post(`${BACKEND_URL}/api/v1/todo/create`, JSON.stringify({
             title,
             content: description
-          }), {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`
-            }
-          });
-          navigate(`/todo/${response.data.response.id}`)
+          }));
+          navigate("/todos")
         }} type="submit" className="mt-4 inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
           Publish post
         </button>

@@ -3,7 +3,7 @@ import FullBlog from "../components/TodoDetails";
 import Spinner from "../components/Spinner";
 import AppBar from "../components/AppBar";
 import { useEffect, useState } from "react";
-import { HTTP } from "../HTTP";
+import PRIVATE_HTTP, { HTTP } from "../HTTP";
 import { Response, TodoTypes } from "../types/interface";
 
 const Todo = () => {
@@ -13,11 +13,7 @@ const Todo = () => {
 
   useEffect(() => {
     (async () => {
-      const res = await HTTP.get(`/api/v1/todo/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      });
+      const res = await PRIVATE_HTTP.get(`/api/v1/todo/${id}`);
       const { response } = res.data as Response<TodoTypes>;
       setTodo(response);
       setLoading(false);

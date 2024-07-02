@@ -55,6 +55,9 @@ todoRouter.get('/all', auth, async (c) => {
 			createdAt: true,
 			updateAt: true,
 			createdBy: true,
+		},
+		orderBy: {
+			createdAt: 'desc'
 		}
 	});
 

@@ -2,7 +2,7 @@ import { Response, TodoTypes } from '../types/interface';
 import DataTable from '../components/DataTable';
 import { columns } from '../types/type';
 import { useEffect, useState } from 'react';
-import { HTTP } from '../HTTP';
+import PRIVATE_HTTP from '../HTTP';
 import AppBar from '../components/AppBar';
 import TodoSkeleton from '../components/TodoSkeleton';
 const TodosTable = () => {
@@ -11,14 +11,14 @@ const TodosTable = () => {
 
   useEffect(() => {
     (async () => {
-      const res = await HTTP.get("/api/v1/todo/all", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      });
-      const { response } = res.data as Response<TodoTypes[]>;
-      setTodos(response);
-      setLoading(false);
+      try {
+        const res = await PRIVATE_HTTP.get("/api/v1/todo/all");
+        const { response } = res.data as Response<TodoTypes[]>;
+        setTodos(response);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
     })();
   }, [])
 
