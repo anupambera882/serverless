@@ -5,11 +5,12 @@ import { useEffect, useState } from 'react';
 import PRIVATE_HTTP from '../HTTP';
 import AppBar from '../components/AppBar';
 import TodoSkeleton from '../components/TodoSkeleton';
+import Button from '../components/Button';
 const TodosTable = () => {
   const [todos, setTodos] = useState<TodoTypes[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const [limitPerPage, setLimitPerPage] = useState(10);
+  const [limitPerPage, setLimitPerPage] = useState(2);
   const [totalNumberOfData, setTotalNumberOfData] = useState(0);
 
   useEffect(() => {
@@ -37,6 +38,9 @@ const TodosTable = () => {
         <div className="flex justify-center">
           <div>
             <TodoSkeleton />
+            <TodoSkeleton />
+            <TodoSkeleton />
+            <TodoSkeleton />
           </div>
         </div>
       </div>
@@ -48,9 +52,20 @@ const TodosTable = () => {
         <div className="p-5 my-0 mx-auto">
           <DataTable columns={columns} data={todos} />
         </div>
-        <div>data per page {limitPerPage}</div>
-        <div>current page number {currentPage + 1}</div>
-        <div>total page number {totalPages}</div>
+        <div className='ml-7 flex'>
+          <label htmlFor="dropdown">Rows per page:</label>
+          <select id="dropdown" name="options" onChange={(e) => {
+            setLimitPerPage(Number(e.target.value));
+            setCurrentPage(0);
+          }}>
+            <option value={2}> 2</option>
+            <option value={5}> 5</option>
+            <option value={10}> 10</option>
+          </select>
+          <div className='mx-7'> {currentPage + 1}-{totalPages} of {totalPages}</div>
+          <Button onClick={() => setCurrentPage((currentPage) => currentPage - 1)} name='<' disabled={currentPage === 0} />
+          <Button onClick={() => setCurrentPage((currentPage) => currentPage + 1)} name='>' disabled={currentPage === totalPages - 1} />
+        </div>
       </>
     );
   }

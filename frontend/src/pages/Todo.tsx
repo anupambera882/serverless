@@ -3,7 +3,7 @@ import FullBlog from "../components/TodoDetails";
 import Spinner from "../components/Spinner";
 import AppBar from "../components/AppBar";
 import { useEffect, useState } from "react";
-import PRIVATE_HTTP, { HTTP } from "../HTTP";
+import PRIVATE_HTTP from "../HTTP";
 import { Response, TodoTypes } from "../types/interface";
 
 const Todo = () => {
