@@ -19,7 +19,7 @@ const SignupForm = () => {
       console.log(res.data);
       const { response } = res.data as Response<{ accessToken: string }>;
       localStorage.setItem("token", response.accessToken);
-      navigate("/todo/1");
+      navigate("/todos");
     } catch (e) {
       alert("Error while signing up")
       // alert the user here that the request failed

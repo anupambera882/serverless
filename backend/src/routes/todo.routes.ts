@@ -39,14 +39,19 @@ todoRouter.post('/create', auth, validate(createBlogInput), async (c) => {
 
 todoRouter.get('/all', auth, async (c) => {
 	const userId = c.get('userId') as string;
+	let page = (c.req.query('page') || 0) as number;
+	let limit = (c.req.query('limit') || 25) as number;
+	[limit, page] = [Math.max(1, limit), Math.max(0, page)];
 	const prisma = new PrismaClient({
 		datasourceUrl: c.env?.DATABASE_URL,
 	}).$extends(withAccelerate());
 
+	const where = {
+		createdBy: +userId
+	};
+
 	const allTodo = await prisma.todo.findMany({
-		where: {
-			createdBy: +userId
-		},
+		where,
 		select: {
 			id: true,
 			title: true,
@@ -58,12 +63,23 @@ todoRouter.get('/all', auth, async (c) => {
 		},
 		orderBy: {
 			createdAt: 'desc'
-		}
+		},
+		take: limit,
+		skip: page * limit
 	});
+
+	const total = await prisma.todo.count({ where })
 
 	return c.json({
 		statusCode: HttpStatusCode.Ok,
-		response: allTodo,
+		response: {
+			data: allTodo,
+			metaData: {
+				pageNumber: page,
+				limitCount: limit,
+				total,
+			},
+		},
 		message: 'All todo retrieve successfully!!',
 	}, HttpStatusCode.Ok);
 });
