@@ -32,7 +32,7 @@ export interface TodoTypes {
   createdBy: number;
 }
 
-interface Column {
+export interface Column {
   header: string;
   key: keyof TodoTypes;
 }

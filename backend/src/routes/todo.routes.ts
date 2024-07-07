@@ -5,6 +5,15 @@ import { PrismaClient } from "@prisma/client/edge";
 import { validate } from "../middleware/validation.middleware";
 import { CreateBlogInput, UpdateBlogInput, createBlogInput, updateBlogInput } from "@learndev/todo-common";
 import { HttpStatusCode } from "../share/enum";
+import { filter } from "../middleware/filter.middleware";
+import { TitleFilter } from "../filter/TitleFilter";
+import { ContentFilter } from "../filter/ContentFilter";
+import { IsDoneFilter } from "../filter/IsDoneFilter";
+import { CreatedAtFilter } from "../filter/CreatedAtFilter";
+import { UpdateAtFilter } from "../filter/UpdateAtFilter";
+import { sort } from "../middleware/sort.middleware";
+import { ContentSort } from "../sort/ContentSort";
+import { CreatedAtSort } from "../sort/CreatedAtSort";
 
 const todoRouter = new Hono<{
 	Bindings: {
@@ -12,7 +21,9 @@ const todoRouter = new Hono<{
 		JWT_SECRET: string,
 	},
 	Variables: {
-		userId?: string
+		userId?: string,
+		filter?: object,
+		sort?: { [x: string]: 'asc' | 'desc' }[],
 	}
 }>();
 
@@ -37,17 +48,20 @@ todoRouter.post('/create', auth, validate(createBlogInput), async (c) => {
 	}, HttpStatusCode.Created);
 })
 
-todoRouter.get('/all', auth, async (c) => {
+todoRouter.get('/all', auth, filter([new TitleFilter(), new ContentFilter(), new IsDoneFilter(), new CreatedAtFilter(), new UpdateAtFilter()]), sort([new ContentSort(),new CreatedAtSort()]), async (c) => {
 	const userId = c.get('userId') as string;
 	let page = (c.req.query('page') || 0) as number;
 	let limit = (c.req.query('limit') || 25) as number;
+	const filter = c.get('filter');
+	const sort = c.get('sort') || [];
 	[limit, page] = [Math.max(1, limit), Math.max(0, page)];
 	const prisma = new PrismaClient({
 		datasourceUrl: c.env?.DATABASE_URL,
 	}).$extends(withAccelerate());
 
 	const where = {
-		createdBy: +userId
+		createdBy: +userId,
+		...filter
 	};
 
 	const allTodo = await prisma.todo.findMany({
@@ -61,9 +75,7 @@ todoRouter.get('/all', auth, async (c) => {
 			updateAt: true,
 			createdBy: true,
 		},
-		orderBy: {
-			createdAt: 'desc'
-		},
+		orderBy:[...sort],
 		take: limit,
 		skip: page * limit
 	});

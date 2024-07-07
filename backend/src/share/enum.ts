@@ -8,4 +8,5 @@ export enum HttpStatusCode {
   Forbidden = 403,
   NotFound = 404,
   InternalServerError = 500,
+  NotImplement = 501,
 }
