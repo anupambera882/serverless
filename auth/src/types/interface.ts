@@ -56,5 +56,5 @@ export interface DataTableProps {
 
 export interface SubmitButtonType {
   label: string,
-  type?: "submit"|"reset" | "button",
+  type?: "submit" | "reset" | "button",
 }

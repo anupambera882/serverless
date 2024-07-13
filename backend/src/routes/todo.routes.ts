@@ -14,6 +14,10 @@ import { UpdateAtFilter } from "../filter/UpdateAtFilter";
 import { sort } from "../middleware/sort.middleware";
 import { ContentSort } from "../sort/ContentSort";
 import { CreatedAtSort } from "../sort/CreatedAtSort";
+import { TitleSort } from "../sort/TitleSort";
+import { UpdateAtSort } from "../sort/UpdateAtSort";
+import { IdSort } from "../sort/IdSort";
+import { IsDoneSort } from "../sort/IsDoneSort";
 
 const todoRouter = new Hono<{
 	Bindings: {
@@ -48,7 +52,7 @@ todoRouter.post('/create', auth, validate(createBlogInput), async (c) => {
 	}, HttpStatusCode.Created);
 })
 
-todoRouter.get('/all', auth, filter([new TitleFilter(), new ContentFilter(), new IsDoneFilter(), new CreatedAtFilter(), new UpdateAtFilter()]), sort([new ContentSort(),new CreatedAtSort()]), async (c) => {
+todoRouter.get('/all', auth, filter([new TitleFilter(), new ContentFilter(), new IsDoneFilter(), new CreatedAtFilter(), new UpdateAtFilter()]), sort([new ContentSort(), new CreatedAtSort(), new TitleSort(), new UpdateAtSort(), new IdSort(), new IsDoneSort()]), async (c) => {
 	const userId = c.get('userId') as string;
 	let page = (c.req.query('page') || 0) as number;
 	let limit = (c.req.query('limit') || 25) as number;
@@ -75,7 +79,7 @@ todoRouter.get('/all', auth, filter([new TitleFilter(), new ContentFilter(), new
 			updateAt: true,
 			createdBy: true,
 		},
-		orderBy:[...sort],
+		orderBy: [...sort],
 		take: limit,
 		skip: page * limit
 	});
