@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import InputButton from "../components/InputArea"
+import InputButton from "../components/LabelledInput"
 import { useState } from "react";
 import { SignInInput } from "@learndev/todo-common";
 import HTTP from "../HTTP";

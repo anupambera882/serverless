@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { SignUpInput } from "@learndev/todo-common";
 import HTTP from "../HTTP";
-import InputArea from "../components/InputArea";
+import InputArea from "../components/LabelledInput";
 import SubmitButton from "../components/SubmitButton";
 import Quote from "../components/Quote";
 const Register = () => {
