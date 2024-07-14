@@ -63,4 +63,5 @@ export interface ButtonType {
   label: string,
   type?: "submit" | "reset" | "button",
   onClick: (e:React.MouseEvent<HTMLButtonElement, MouseEvent>)=> void
+  disabled?: boolean
 }
